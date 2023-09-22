@@ -9,103 +9,54 @@ import {
 } from 'formik';
 import React, { FC, HTMLAttributes, useCallback, useState } from 'react';
 import { Icon, WithTooltip } from '@storybook/design-system';
-
-const errorMap = {
-  email: {
-    required: {
-      normal: 'Please enter your email address',
-      tooltip:
-        'We do require an email address and a password as a minimum in order to be able to create an account for you to log in with',
-    },
-    format: {
-      normal: 'Please enter a correctly formatted email address',
-      tooltip:
-        'Your email address is formatted incorrectly and is not correct - please double check for misspelling',
-    },
-  },
-  password: {
-    required: {
-      normal: 'Please enter a password',
-      tooltip: 'A password is required to create an account',
-    },
-    length: {
-      normal: 'Please enter a password of minimum 6 characters',
-      tooltip:
-        'For security reasons we enforce a password length of minimum 6 characters - but have no other requirements',
-    },
-  },
-  verifiedPassword: {
-    required: {
-      normal: 'Please verify your password',
-      tooltip:
-        'Verification of your password is required to ensure no errors in the spelling of the password',
-    },
-    match: {
-      normal: 'Your passwords do not match',
-      tooltip:
-        'Your verification password has to match your password to make sure you have not misspelled',
-    },
-  },
-};
-
-// https://emailregex.com/
-const email99RegExp = new RegExp(
-  // eslint-disable-next-line no-useless-escape
-  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-);
-
-export interface AccountFormResponse {
-  success: boolean;
-}
+import { validateAccountForm } from './validate';
 
 export interface AccountFormValues {
+  name: string;
   email: string;
-  password: string;
+  countryOfBirth: string;
+  numberDonuts: number;
+  numberDice: number;
 }
 
-interface FormValues extends AccountFormValues {
-  verifiedPassword: string;
-}
+const initialValues: AccountFormValues = {
+  name: '',
+  email: '',
+  countryOfBirth: '',
+  numberDonuts: 0,
+  numberDice: 0,
+};
 
-interface FormErrors {
+export interface AccountFormErrors {
+  name?: string;
+  nameTooltip?: string;
   email?: string;
   emailTooltip?: string;
-  password?: string;
-  passwordTooltip?: string;
-  verifiedPassword?: string;
-  verifiedPasswordTooltip?: string;
+  countryOfBirth?: string;
+  countryOfBirthTooltip?: string;
+  numberDonuts?: string;
+  numberDonutsTooltip?: string;
+  numberDice?: string;
+  numberDiceTooltip?: string;
 }
 
 export type AccountFormProps = {
-  passwordVerification?: boolean;
   onSubmit?: (values: AccountFormValues) => void;
-  onTransactionStart?: (values: AccountFormValues) => void;
-  onTransactionEnd?: (values: AccountFormResponse) => void;
 };
 
-export const AccountForm: FC<AccountFormProps> = ({
-  passwordVerification,
-  onSubmit,
-  onTransactionStart,
-  onTransactionEnd,
-}) => {
+export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
   const [state, setState] = useState({
     transacting: false,
     transactionSuccess: false,
-    transactionFailure: false,
   });
 
   const handleFormSubmit = useCallback(
     async (
-      { email, password }: FormValues,
-      { setSubmitting, resetForm }: FormikHelpers<FormValues>
+      { name, email, countryOfBirth, numberDonuts, numberDice }: AccountFormValues,
+      { setSubmitting, resetForm }: FormikHelpers<AccountFormValues>
     ) => {
       if (onSubmit) {
-        onSubmit({ email, password });
-      }
-
-      if (onTransactionStart) {
-        onTransactionStart({ email, password });
+        onSubmit({ name, email, countryOfBirth, numberDonuts, numberDice });
       }
 
       setSubmitting(true);
@@ -117,23 +68,16 @@ export const AccountForm: FC<AccountFormProps> = ({
 
       await new Promise((r) => setTimeout(r, 2100));
 
-      const success = Math.random() < 1;
-
-      if (onTransactionEnd) {
-        onTransactionEnd({ success });
-      }
-
       setSubmitting(false);
-      resetForm({ values: { email: '', password: '', verifiedPassword: '' } });
+      resetForm({ values: initialValues });
 
       setState({
         ...state,
         transacting: false,
-        transactionSuccess: success === true,
-        transactionFailure: success === false,
+        transactionSuccess: true,
       });
     },
-    [setState, onTransactionEnd, onTransactionStart]
+    [setState]
   );
 
   return (
@@ -176,199 +120,178 @@ export const AccountForm: FC<AccountFormProps> = ({
           </g>
         </Title>
       </Brand>
-      {!state.transactionSuccess && !state.transactionFailure && (
+      {!state.transactionSuccess && (
         <Introduction>Create an account to join the Storybook community</Introduction>
       )}
       <Content>
-        {state.transactionSuccess && !state.transactionFailure && (
-          <Presentation>
-            <p>
-              Everything is perfect. Your account is ready and we should probably get you started!
-            </p>
-            <p>So why don't you get started then?</p>
-            <Submit
-              dirty
-              onClick={() => {
-                setState({
-                  transacting: false,
-                  transactionSuccess: false,
-                  transactionFailure: false,
-                });
-              }}
-            >
-              Go back
-            </Submit>
-          </Presentation>
-        )}
-        {state.transactionFailure && !state.transactionSuccess && (
-          <Presentation>
-            <p>What a mess, this API is not working</p>
-            <p>
-              Someone should probably have a stern talking to about this, but it won't be me - coz
-              I'm gonna head out into the nice weather
-            </p>
-            <Submit
-              dirty
-              onClick={() => {
-                setState({
-                  transacting: false,
-                  transactionSuccess: false,
-                  transactionFailure: false,
-                });
-              }}
-            >
-              Go back
-            </Submit>
-          </Presentation>
-        )}
-        {!state.transactionSuccess && !state.transactionFailure && (
-          <Formik
-            initialValues={{ email: '', password: '', verifiedPassword: '' }}
-            validateOnBlur={false}
-            validateOnChange={false}
-            onSubmit={handleFormSubmit}
-            validate={({ email, password, verifiedPassword }) => {
-              const errors: FormErrors = {};
+        <Formik
+          initialValues={initialValues}
+          validateOnBlur={false}
+          validateOnChange={false}
+          onSubmit={handleFormSubmit}
+          validate={validateAccountForm}
+        >
+          {({ errors: _errors, isSubmitting, dirty }: FormikProps<AccountFormValues>) => {
+            const errors = _errors as AccountFormErrors;
 
-              if (!email) {
-                errors.email = errorMap.email.required.normal;
-                errors.emailTooltip = errorMap.email.required.tooltip;
-              } else {
-                const validEmail = email.match(email99RegExp);
-
-                if (validEmail === null) {
-                  errors.email = errorMap.email.format.normal;
-                  errors.emailTooltip = errorMap.email.format.tooltip;
-                }
-              }
-
-              if (!password) {
-                errors.password = errorMap.password.required.normal;
-                errors.passwordTooltip = errorMap.password.required.tooltip;
-              } else if (password.length < 6) {
-                errors.password = errorMap.password.length.normal;
-                errors.passwordTooltip = errorMap.password.length.tooltip;
-              }
-
-              if (passwordVerification && !verifiedPassword) {
-                errors.verifiedPassword = errorMap.verifiedPassword.required.normal;
-                errors.verifiedPasswordTooltip = errorMap.verifiedPassword.required.tooltip;
-              } else if (passwordVerification && password !== verifiedPassword) {
-                errors.verifiedPassword = errorMap.verifiedPassword.match.normal;
-                errors.verifiedPasswordTooltip = errorMap.verifiedPassword.match.tooltip;
-              }
-
-              return errors;
-            }}
-          >
-            {({ errors: _errors, isSubmitting, dirty }: FormikProps<FormValues>) => {
-              const errors = _errors as FormErrors;
-
-              return (
-                <Form noValidate aria-disabled={isSubmitting ? 'true' : 'false'}>
-                  <FieldWrapper>
-                    <Label htmlFor="email">Email</Label>
-                    <FormikInput id="email" name="email">
-                      {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
-                        <>
-                          <Input
-                            data-testid="email"
-                            aria-required="true"
-                            aria-disabled={isSubmitting ? 'true' : 'false'}
-                            disabled={isSubmitting}
-                            type="email"
-                            aria-invalid={errors.email ? 'true' : 'false'}
-                            {...field}
-                          />
-                          {errors.email && (
-                            <WithTooltip
-                              tooltip={<ErrorTooltip>{errors.emailTooltip}</ErrorTooltip>}
-                            >
-                              <ErrorWrapper>
-                                <ErrorIcon icon="question" />
-                                <Error name="email" component="div" />
-                              </ErrorWrapper>
-                            </WithTooltip>
-                          )}
-                        </>
-                      )}
-                    </FormikInput>
-                  </FieldWrapper>
-                  <FieldWrapper>
-                    <Label htmlFor="password">Password</Label>
-                    <FormikInput id="password" name="password">
-                      {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
+            return (
+              <Form noValidate aria-disabled={isSubmitting ? 'true' : 'false'}>
+                <FieldWrapper>
+                  <Label htmlFor="name">Your Name</Label>
+                  <FormikInput id="name" name="name">
+                    {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
+                      <>
                         <Input
-                          data-testid="password1"
+                          data-testid="name"
                           aria-required="true"
                           aria-disabled={isSubmitting ? 'true' : 'false'}
-                          aria-invalid={errors.password ? 'true' : 'false'}
-                          type="password"
                           disabled={isSubmitting}
+                          type="name"
+                          aria-invalid={errors.name ? 'true' : 'false'}
                           {...field}
                         />
-                      )}
-                    </FormikInput>
-                    {errors.password && (
-                      <WithTooltip tooltip={<ErrorTooltip>{errors.passwordTooltip}</ErrorTooltip>}>
-                        <ErrorWrapper data-testid="password-error-info">
-                          <ErrorIcon icon="question" />
-                          <Error name="password" component="div" />
-                        </ErrorWrapper>
-                      </WithTooltip>
-                    )}
-                  </FieldWrapper>
-                  {passwordVerification && (
-                    <FieldWrapper>
-                      <Label htmlFor="verifiedPassword">Verify Password</Label>
-                      <FormikInput id="verifiedPassword" name="verifiedPassword">
-                        {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
-                          <Input
-                            data-testid="password2"
-                            aria-required="true"
-                            aria-disabled={isSubmitting ? 'true' : 'false'}
-                            aria-invalid={errors.verifiedPassword ? 'true' : 'false'}
-                            type="password"
-                            disabled={isSubmitting}
-                            {...field}
-                          />
+                        {errors.name && (
+                          <WithTooltip tooltip={<ErrorTooltip>{errors.nameTooltip}</ErrorTooltip>}>
+                            <ErrorWrapper>
+                              <ErrorIcon icon="question" />
+                              <Error name="name" component="div" />
+                            </ErrorWrapper>
+                          </WithTooltip>
                         )}
-                      </FormikInput>
-                      {errors.verifiedPassword && (
-                        <WithTooltip
-                          tooltip={<ErrorTooltip>{errors.verifiedPasswordTooltip}</ErrorTooltip>}
-                        >
-                          <ErrorWrapper>
-                            <ErrorIcon icon="question" />
-                            <Error name="verifiedPassword" component="div" />
-                          </ErrorWrapper>
-                        </WithTooltip>
-                      )}
-                    </FieldWrapper>
+                      </>
+                    )}
+                  </FormikInput>
+                </FieldWrapper>
+
+                <FieldWrapper>
+                  <Label htmlFor="email">Email</Label>
+                  <FormikInput id="email" name="email">
+                    {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
+                      <>
+                        <Input
+                          data-testid="email"
+                          aria-required="true"
+                          aria-disabled={isSubmitting ? 'true' : 'false'}
+                          disabled={isSubmitting}
+                          type="email"
+                          aria-invalid={errors.email ? 'true' : 'false'}
+                          {...field}
+                        />
+                        {errors.email && (
+                          <WithTooltip tooltip={<ErrorTooltip>{errors.emailTooltip}</ErrorTooltip>}>
+                            <ErrorWrapper>
+                              <ErrorIcon icon="question" />
+                              <Error name="email" component="div" />
+                            </ErrorWrapper>
+                          </WithTooltip>
+                        )}
+                      </>
+                    )}
+                  </FormikInput>
+                </FieldWrapper>
+
+                <FieldWrapper>
+                  <Label htmlFor="countryOfBirth">What country were you born in?</Label>
+                  <FormikInput id="countryOfBirth" name="countryOfBirth">
+                    {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
+                      <>
+                        <Input
+                          data-testid="countryOfBirth"
+                          aria-required="true"
+                          aria-disabled={isSubmitting ? 'true' : 'false'}
+                          disabled={isSubmitting}
+                          type="countryOfBirth"
+                          aria-invalid={errors.countryOfBirth ? 'true' : 'false'}
+                          {...field}
+                        />
+                        {errors.countryOfBirth && (
+                          <WithTooltip
+                            tooltip={<ErrorTooltip>{errors.countryOfBirthTooltip}</ErrorTooltip>}
+                          >
+                            <ErrorWrapper>
+                              <ErrorIcon icon="question" />
+                              <Error name="email" component="div" />
+                            </ErrorWrapper>
+                          </WithTooltip>
+                        )}
+                      </>
+                    )}
+                  </FormikInput>
+                </FieldWrapper>
+
+                <FieldWrapper>
+                  <Label htmlFor="numberDonuts">How many donuts do you want?</Label>
+                  <FormikInput id="numberDonuts" name="numberDonuts">
+                    {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
+                      <Input
+                        data-testid="numberDonuts1"
+                        aria-required="true"
+                        aria-disabled={isSubmitting ? 'true' : 'false'}
+                        aria-invalid={errors.numberDonuts ? 'true' : 'false'}
+                        type="number"
+                        disabled={isSubmitting}
+                        {...field}
+                      />
+                    )}
+                  </FormikInput>
+                  {errors.numberDonuts && (
+                    <WithTooltip
+                      tooltip={<ErrorTooltip>{errors.numberDonutsTooltip}</ErrorTooltip>}
+                    >
+                      <ErrorWrapper data-testid="password-error-info">
+                        <ErrorIcon icon="question" />
+                        <Error name="password" component="div" />
+                      </ErrorWrapper>
+                    </WithTooltip>
                   )}
-                  <Actions>
-                    <Submit
-                      data-testid="submit"
-                      aria-disabled={isSubmitting || !dirty ? 'true' : 'false'}
-                      disabled={isSubmitting || !dirty}
-                      dirty={dirty}
-                      type="submit"
-                    >
-                      Create Account
-                    </Submit>
-                    <Reset
-                      aria-disabled={isSubmitting ? 'true' : 'false'}
-                      disabled={isSubmitting}
-                      type="reset"
-                    >
-                      Reset
-                    </Reset>
-                  </Actions>
-                </Form>
-              );
-            }}
-          </Formik>
-        )}
+                </FieldWrapper>
+
+                <FieldWrapper>
+                  <Label htmlFor="numberDice">How many dice do you want?</Label>
+                  <FormikInput id="numberDice" name="numberDice">
+                    {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
+                      <Input
+                        data-testid="numberDice1"
+                        aria-required="true"
+                        aria-disabled={isSubmitting ? 'true' : 'false'}
+                        aria-invalid={errors.numberDice ? 'true' : 'false'}
+                        type="number"
+                        disabled={isSubmitting}
+                        {...field}
+                      />
+                    )}
+                  </FormikInput>
+                  {errors.numberDice && (
+                    <WithTooltip tooltip={<ErrorTooltip>{errors.numberDiceTooltip}</ErrorTooltip>}>
+                      <ErrorWrapper data-testid="password-error-info">
+                        <ErrorIcon icon="question" />
+                        <Error name="password" component="div" />
+                      </ErrorWrapper>
+                    </WithTooltip>
+                  )}
+                </FieldWrapper>
+                <Actions>
+                  <Submit
+                    data-testid="submit"
+                    aria-disabled={isSubmitting || !dirty ? 'true' : 'false'}
+                    disabled={isSubmitting || !dirty}
+                    dirty={dirty}
+                    type="submit"
+                  >
+                    Create Account
+                  </Submit>
+                  <Reset
+                    aria-disabled={isSubmitting ? 'true' : 'false'}
+                    disabled={isSubmitting}
+                    type="reset"
+                  >
+                    Reset
+                  </Reset>
+                </Actions>
+              </Form>
+            );
+          }}
+        </Formik>
       </Content>
     </Wrapper>
   );
@@ -435,10 +358,6 @@ const Content = styled.div({
   marginTop: 8,
 });
 
-const Presentation = styled.div({
-  textAlign: 'center',
-});
-
 const Form = styled(FormikForm)({
   width: '100%',
   alignSelf: 'flex-start',
@@ -497,6 +416,7 @@ const ErrorIcon = styled(Icon)(({ theme }) => ({
 }));
 
 const ErrorTooltip = styled.div(({ theme }) => ({
+  color: theme.color.inverseText,
   fontFamily: theme.typography.fonts.base,
   fontSize: 13,
   padding: 8,
