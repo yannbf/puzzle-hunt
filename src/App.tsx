@@ -2,10 +2,13 @@ import { ThemeProvider, ensure } from '@storybook/theming';
 import { themes } from '@storybook/theming/create';
 import { AccountForm } from './Form';
 
-console.log(ensure(themes.light));
+const theme = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
+  ? themes.dark
+  : themes.light;
+
 function App() {
   return (
-    <ThemeProvider theme={ensure(themes.light)}>
+    <ThemeProvider theme={ensure(theme)}>
       <AccountForm />
     </ThemeProvider>
   );
