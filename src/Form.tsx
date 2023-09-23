@@ -214,7 +214,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                           >
                             <ErrorWrapper>
                               <ErrorIcon icon="question" />
-                              <Error name="email" component="div" />
+                              <Error name="townOfBirth" component="div" />
                             </ErrorWrapper>
                           </WithTooltip>
                         )}
@@ -282,7 +282,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                     dirty={dirty}
                     type="submit"
                   >
-                    Create Account
+                    Do stuff!
                   </Submit>
                   <Reset
                     aria-disabled={isSubmitting ? 'true' : 'false'}

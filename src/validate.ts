@@ -27,7 +27,7 @@ const errorMap = {
   },
   townOfBirth: {
     required: {
-      normal: 'Please enter your country of birth',
+      normal: 'Please enter your town of birth',
       tooltip:
         'We are trying to pry, we just think you might not know the answer to this question for a certain person.',
     },
