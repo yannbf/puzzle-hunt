@@ -26,9 +26,7 @@ export const Results = ({ values: { name, numberDonuts, numberDice }, result }: 
       <br />
       <br />
 
-      {result.first && <p>{result.first}</p>}
-
-      {result.second && <p>{result.second}</p>}
+      {result.text && <p>{result.text}</p>}
     </div>
   );
 };

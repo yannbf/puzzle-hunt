@@ -10,6 +10,7 @@ import {
 import { FC, HTMLAttributes, useCallback } from 'react';
 import { Icon, WithTooltip } from '@storybook/design-system';
 import { validateAccountForm } from './validate';
+import { FormResponse } from './App';
 
 export interface AccountFormValues {
   name: string;
@@ -20,6 +21,7 @@ export interface AccountFormValues {
 }
 
 const isChromatic = location.href.match(/chromatic=true/);
+const isPlaywright = !!navigator.webdriver;
 
 const initialValues: AccountFormValues = {
   name: '',
@@ -43,7 +45,7 @@ export interface AccountFormErrors {
 }
 
 export type AccountFormProps = {
-  onSubmit?: (contents: { values: AccountFormValues; result: string }) => void;
+  onSubmit?: (contents: FormResponse) => void;
 };
 
 export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
@@ -68,6 +70,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
               theme: themeName,
               userAgent: navigator.userAgent,
               isChromatic,
+              isPlaywright,
             },
           }),
           // headers: { 'content-type': 'application/json' },

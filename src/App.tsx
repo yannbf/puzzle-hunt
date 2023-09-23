@@ -8,7 +8,7 @@ const theme = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
   ? themes.dark
   : themes.light;
 
-export type FormResponse = { values: AccountFormValues; result: { first: string; second: string } };
+export type FormResponse = { values: AccountFormValues; result: { text: string } };
 
 function App() {
   const [response, setResponse] = useState<FormResponse>();
