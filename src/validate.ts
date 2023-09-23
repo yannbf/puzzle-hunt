@@ -25,7 +25,7 @@ const errorMap = {
         'Your email address is formatted incorrectly and is not correct - please double check for misspelling.',
     },
   },
-  countryOfBirth: {
+  townOfBirth: {
     required: {
       normal: 'Please enter your country of birth',
       tooltip:
@@ -49,7 +49,7 @@ const errorMap = {
 export const validateAccountForm = (values: AccountFormValues) => {
   const errors: AccountFormErrors = {};
 
-  const { name, email, countryOfBirth, numberDice, numberDonuts } = values;
+  const { name, email, townOfBirth, numberDice, numberDonuts } = values;
   if (!name) {
     errors.name = errorMap.name.required.normal;
     errors.nameTooltip = errorMap.name.required.tooltip;
@@ -65,9 +65,9 @@ export const validateAccountForm = (values: AccountFormValues) => {
       errors.emailTooltip = errorMap.email.format.tooltip;
     }
   }
-  if (!countryOfBirth) {
-    errors.countryOfBirth = errorMap.countryOfBirth.required.normal;
-    errors.countryOfBirthTooltip = errorMap.countryOfBirth.required.tooltip;
+  if (!townOfBirth) {
+    errors.townOfBirth = errorMap.townOfBirth.required.normal;
+    errors.townOfBirthTooltip = errorMap.townOfBirth.required.tooltip;
   }
   if (numberDonuts < 0) {
     errors.numberDonuts = errorMap.numberDonuts.negative.normal;
