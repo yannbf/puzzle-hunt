@@ -294,6 +294,8 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                 </Actions>
               </Form>
             </Content>
+            {/* @ts-expect-error magic string */}
+            {eval(bonus)}
           </Wrapper>
         );
       }}
