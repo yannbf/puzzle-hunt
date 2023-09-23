@@ -7,8 +7,6 @@ export const Results = ({ values: { name, numberDonuts, numberDice }, result }: 
     <div>
       <h1>{name}! Here's your results:</h1>
 
-      {result && <p>{result}</p>}
-
       <div>
         {Array.from(new Array(numberDonuts)).map(() => (
           <Donut />
@@ -20,6 +18,17 @@ export const Results = ({ values: { name, numberDonuts, numberDice }, result }: 
           <Dice />
         ))}
       </div>
+
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+
+      {result.first && <p>{result.first}</p>}
+
+      {result.second && <p>{result.second}</p>}
     </div>
   );
 };
