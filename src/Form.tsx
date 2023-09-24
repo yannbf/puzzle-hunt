@@ -298,7 +298,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
               </Form>
             </Content>
             {/* @ts-expect-error magic string */}
-            {eval(bonus)}
+            <Label>{eval(bonus)}</Label>
           </Wrapper>
         );
       }}
@@ -377,11 +377,12 @@ const FieldWrapper = styled.div({
   marginBottom: 10,
 });
 
-const Label = styled.label({
+const Label = styled.label(({ theme }) => ({
+  color: theme.color.defaultText,
   fontSize: 13,
   fontWeight: 500,
   marginBottom: 6,
-});
+}));
 
 const Input = styled.input(({ theme }) => ({
   fontSize: 14,
