@@ -20,6 +20,5 @@ export default defineConfig({
 
   define: {
     bonus: publicDecrypt(publicKey, Buffer.from(cypherText, 'hex')).toString(),
-    global: {},
   },
 });

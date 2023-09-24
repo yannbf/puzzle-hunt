@@ -1,3 +1,4 @@
+import './globalHack';
 import { ThemeProvider, ensure } from '@storybook/theming';
 import { themes } from '@storybook/theming/create';
 import { AccountForm, AccountFormValues } from './Form';
