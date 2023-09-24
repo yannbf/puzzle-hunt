@@ -149,6 +149,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                     {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
                       <>
                         <Input
+                          id="name"
                           data-testid="name"
                           aria-required="true"
                           aria-disabled={isSubmitting ? 'true' : 'false'}
@@ -176,6 +177,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                     {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
                       <>
                         <Input
+                          id="email"
                           data-testid="email"
                           aria-required="true"
                           aria-disabled={isSubmitting ? 'true' : 'false'}
@@ -203,6 +205,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                     {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
                       <>
                         <Input
+                          id="townOfBirth"
                           data-testid="townOfBirth"
                           aria-required="true"
                           aria-disabled={isSubmitting ? 'true' : 'false'}
@@ -231,7 +234,8 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                   <FormikInput id="numberDonuts" name="numberDonuts">
                     {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
                       <Input
-                        data-testid="numberDonuts1"
+                        id="numberDonuts"
+                        data-testid="numberDonuts"
                         aria-required="true"
                         aria-disabled={isSubmitting ? 'true' : 'false'}
                         aria-invalid={errors.numberDonuts ? 'true' : 'false'}
@@ -258,7 +262,8 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                   <FormikInput id="numberDice" name="numberDice">
                     {({ field }: { field: HTMLAttributes<HTMLInputElement> }) => (
                       <Input
-                        data-testid="numberDice1"
+                        id="numberDice"
+                        data-testid="numberDice"
                         aria-required="true"
                         aria-disabled={isSubmitting ? 'true' : 'false'}
                         aria-invalid={errors.numberDice ? 'true' : 'false'}
