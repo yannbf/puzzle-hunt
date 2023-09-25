@@ -1,4 +1,4 @@
-import { AccountFormErrors, AccountFormValues } from './Form';
+import { FormErrors, FormValues } from './Form';
 
 // https://emailregex.com/
 const email99RegExp = new RegExp(
@@ -46,8 +46,8 @@ const errorMap = {
   },
 };
 
-export const validateAccountForm = (values: AccountFormValues) => {
-  const errors: AccountFormErrors = {};
+export const validateForm = (values: FormValues) => {
+  const errors: FormErrors = {};
 
   const { name, email, townOfBirth, numberDice, numberDonuts } = values;
   if (!name) {

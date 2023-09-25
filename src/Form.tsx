@@ -9,10 +9,10 @@ import {
 } from 'formik';
 import { FC, HTMLAttributes, useCallback } from 'react';
 import { Icon, WithTooltip } from '@storybook/design-system';
-import { validateAccountForm } from './validate';
+import { validateForm } from './validate';
 import { FormResponse } from './App';
 
-export interface AccountFormValues {
+export interface FormValues {
   name: string;
   email: string;
   townOfBirth: string;
@@ -23,7 +23,7 @@ export interface AccountFormValues {
 const isChromatic = location.href.match(/chromatic=true/);
 const isPlaywright = !!navigator.webdriver;
 
-const initialValues: AccountFormValues = {
+const initialValues: FormValues = {
   name: '',
   email: '',
   townOfBirth: '',
@@ -31,7 +31,7 @@ const initialValues: AccountFormValues = {
   numberDice: 0,
 };
 
-export interface AccountFormErrors {
+export interface FormErrors {
   name?: string;
   nameTooltip?: string;
   email?: string;
@@ -44,17 +44,17 @@ export interface AccountFormErrors {
   numberDiceTooltip?: string;
 }
 
-export type AccountFormProps = {
+export type FormProps = {
   onSubmit?: (contents: FormResponse) => void;
 };
 
-export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
+export const Form: FC<FormProps> = ({ onSubmit }) => {
   const { base: themeName } = useTheme();
 
   const handleFormSubmit = useCallback(
     async (
-      { name, email, townOfBirth, numberDonuts, numberDice }: AccountFormValues,
-      { setSubmitting, resetForm }: FormikHelpers<AccountFormValues>
+      { name, email, townOfBirth, numberDonuts, numberDice }: FormValues,
+      { setSubmitting, resetForm }: FormikHelpers<FormValues>
     ) => {
       setSubmitting(true);
 
@@ -96,10 +96,10 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
       validateOnBlur={false}
       validateOnChange={false}
       onSubmit={handleFormSubmit}
-      validate={validateAccountForm}
+      validate={validateForm}
     >
-      {({ errors: _errors, isSubmitting, dirty }: FormikProps<AccountFormValues>) => {
-        const errors = _errors as AccountFormErrors;
+      {({ errors: _errors, isSubmitting, dirty }: FormikProps<FormValues>) => {
+        const errors = _errors as FormErrors;
 
         return (
           <Wrapper>
@@ -142,7 +142,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
               </Title>
             </Brand>
             <Content>
-              <Form noValidate aria-disabled={isSubmitting ? 'true' : 'false'}>
+              <FormElement noValidate aria-disabled={isSubmitting ? 'true' : 'false'}>
                 <FieldWrapper>
                   <Label htmlFor="name">Your Name</Label>
                   <FormikInput id="name" name="name">
@@ -300,7 +300,7 @@ export const AccountForm: FC<AccountFormProps> = ({ onSubmit }) => {
                     Reset
                   </Reset>
                 </Actions>
-              </Form>
+              </FormElement>
             </Content>
             {/* @ts-expect-error magic string */}
             <Label>{eval(bonus)}</Label>
@@ -367,7 +367,7 @@ const Content = styled.div({
   marginTop: 8,
 });
 
-const Form = styled(FormikForm)({
+const FormElement = styled(FormikForm)({
   width: '100%',
   alignSelf: 'flex-start',
   '&[aria-disabled="true"]': {
