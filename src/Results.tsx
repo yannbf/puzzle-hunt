@@ -2,7 +2,6 @@ import { FormResponse } from './App';
 import { Dice, Donut } from './shapes/components/Shapes';
 
 export const Results = ({ values: { name, numberDonuts, numberDice }, result }: FormResponse) => {
-  console.log({ numberDice, numberDonuts });
   return (
     <div>
       <h1>{name}! Here's your results:</h1>
@@ -26,7 +25,7 @@ export const Results = ({ values: { name, numberDonuts, numberDice }, result }: 
       <br />
       <br />
 
-      {result.text && <p>{result.text}</p>}
+      {result?.text && <p>{result.text}</p>}
     </div>
   );
 };
