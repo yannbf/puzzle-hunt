@@ -311,16 +311,19 @@ export const Form: FC<FormProps> = ({ onSubmit }) => {
   );
 };
 
-const Wrapper = styled.section(({ theme }) => ({
-  fontFamily: theme.typography.fonts.base,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  width: 450,
-  padding: 32,
-  backgroundColor: theme.background.content,
-  borderRadius: 7,
-}));
+const Wrapper = styled.section(({ theme }) => {
+  // console.log({ theme })
+  return ({
+    fontFamily: theme.typography.fonts.base,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: 450,
+    padding: 32,
+    backgroundColor: theme.background.content,
+    borderRadius: 7,
+  })
+});
 
 const Brand = styled.div({
   display: 'flex',
